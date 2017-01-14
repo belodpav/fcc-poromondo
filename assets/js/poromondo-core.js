@@ -32,6 +32,7 @@ function poromondoClock(breakLength, sessionLength, currentMode) {
         var thisVal = this; // Let's save reference to this 
         if (time > 0 && this.currentTimerState === 1) {
         time -=1;
+        displayRef.innerHTML = timeToHHMMSS(time);
         this.setCurrenTimerValue(time);
         console.log(time);
         setTimeout(function () {thisVal.timerTimedCount(displayRef, time);}, 50);
@@ -73,6 +74,7 @@ function initIndicators(obj) {
     sessionDisplay.textContent = obj.getSessionLength();
     
 };
+function timeToHHMMSS(timeSec) {
     var hours = parseInt(timeSec / 3600) > 0 ? parseInt(timeSec / 3600) + " : " : "";
     timeSec = parseInt(timeSec % 3600);
     return hours + parseInt(timeSec / 60) + " : " + timeSec % 60; 
@@ -90,6 +92,7 @@ var curClock = new poromondoClock(5, 5, 0);
 // Inticators Initialization 
 initIndicators(curClock);
 
+console.log(timeToHHMMSS(7200));
 console.log(curClock.getBreakLength());
 
 // Break display setups
@@ -102,6 +105,7 @@ breakBtnMin.onclick = function () {
     breakDisplay.textContent = curClock.getBreakLength();
     curClock.setCurrenTimerValue(60*curClock.getBreakLength());
     if (curClock.currentMode === 1) {
+        clockDisplay.innerHTML = timeToHHMMSS(curClock.getCurrentTimerValue());    
     }
     
 }
@@ -113,6 +117,7 @@ breakBtnPlus.onclick = function () {
     breakDisplay.textContent = curClock.getBreakLength();
     curClock.setCurrenTimerValue(60*curClock.getBreakLength());
     if (curClock.currentMode === 1) {
+        clockDisplay.innerHTML = timeToHHMMSS(curClock.getCurrentTimerValue());    
     }
 }
 
@@ -125,6 +130,7 @@ sessionBtnMin.onclick = function () {
     sessionDisplay.textContent = curClock.getSessionLength();
     curClock.setCurrenTimerValue(60*curClock.getSessionLength());
     if (curClock.currentMode === 0) {
+        clockDisplay.innerHTML = timeToHHMMSS(curClock.getCurrentTimerValue());    
     }
 }
 sessionBtnPlus.onclick = function () {
@@ -135,6 +141,7 @@ sessionBtnPlus.onclick = function () {
     sessionDisplay.textContent = curClock.getSessionLength();
     curClock.setCurrenTimerValue(60*curClock.getSessionLength());
     if (curClock.currentMode === 0) {
+        clockDisplay.innerHTML = timeToHHMMSS(curClock.getCurrentTimerValue());    
     }
 }
 
