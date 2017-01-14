@@ -4,11 +4,11 @@ function poromondoClock(breakLength, sessionLength, currentMode) {
     this.sessionLength = sessionLength,
     this.currentMode = currentMode, // 0 - "session" mode, 1 - "break" mode
     this.currentTimerValue = 60*this.sessionLength,
-    this.currentTimerState = 0, // 0 - the timer is active, 1 the timer is not avtive 
+    this.currentTimerState = 0, // 1 - the timer is active, 0 the timer is not avtive 
     this.setBreakLength = function (btnType) { // -1 - when "minus" button was clicked, 1 - when "plus" button was clicked
         if (btnType === -1 && this.breakLength > 1) {
             this.breakLength--;
-        } else if (btnType === 1 && this.breakLength < 60) {
+        } else if (btnType === 1) {
             this.breakLength++;
         } 
     },
@@ -18,7 +18,7 @@ function poromondoClock(breakLength, sessionLength, currentMode) {
     this.setSessionLength = function (btnType) { // -1 - when "minus" button was clicked, 1 - when "plus" button was clicked
         if (btnType === -1 && this.sessionLength > 1) {
             this.sessionLength--;
-        } else if (btnType === 1 && this.sessionLength < 60) {
+        } else if (btnType === 1) {
             this.sessionLength++;
         } 
     },
@@ -32,7 +32,6 @@ function poromondoClock(breakLength, sessionLength, currentMode) {
         var thisVal = this; // Let's save reference to this 
         if (time > 0 && this.currentTimerState === 1) {
         time -=1;
-        displayRef.innerHTML = time;
         this.setCurrenTimerValue(time);
         console.log(time);
         setTimeout(function () {thisVal.timerTimedCount(displayRef, time);}, 50);
@@ -56,18 +55,6 @@ function poromondoClock(breakLength, sessionLength, currentMode) {
                   
             }
              this.currentTimerState = 1; 
-            /*if (this.currentMode === 0) {
-                
-                this.setCurrenTimerValue(60*this.breakLength);
-                this.timerTimedCount(displayRef, this.getCurrentTimerValue());
-                //this.currentMode = 1;
-            } else {
-                
-                this.setCurrenTimerValue(60*this.sessionLength);
-                //this.timerTimedCount(displayRef, this.getCurrentTimerValue());
-                //this.currentMode = 0;
-            }*/
-            
         }
     },
     this.getCurrentTimerValue = function () {
@@ -85,6 +72,10 @@ function initIndicators(obj) {
     breakDisplay.textContent = obj.getBreakLength();
     sessionDisplay.textContent = obj.getSessionLength();
     
+};
+    var hours = parseInt(timeSec / 3600) > 0 ? parseInt(timeSec / 3600) + " : " : "";
+    timeSec = parseInt(timeSec % 3600);
+    return hours + parseInt(timeSec / 60) + " : " + timeSec % 60; 
 }
 var breakBtnMin  = document.querySelector(".mode-break .btn-min"),
     breakBtnPlus = document.querySelector(".mode-break .btn-plus"),
@@ -102,25 +93,51 @@ initIndicators(curClock);
 console.log(curClock.getBreakLength());
 
 // Break display setups
+
 breakBtnMin.onclick = function () {
+    if (curClock.getCurrentTimerState() === 1) {
+        return;
+    } 
     curClock.setBreakLength(-1);
     breakDisplay.textContent = curClock.getBreakLength();
+    curClock.setCurrenTimerValue(60*curClock.getBreakLength());
+    if (curClock.currentMode === 1) {
+    }
+    
 }
 breakBtnPlus.onclick = function () {
+    if (curClock.getCurrentTimerState() === 1) {
+        return;
+    }
     curClock.setBreakLength(1);
     breakDisplay.textContent = curClock.getBreakLength();
+    curClock.setCurrenTimerValue(60*curClock.getBreakLength());
+    if (curClock.currentMode === 1) {
+    }
 }
+
 // Session display setups
 sessionBtnMin.onclick = function () {
+    if (curClock.getCurrentTimerState() === 1) {
+        return;
+    }
     curClock.setSessionLength(-1);
     sessionDisplay.textContent = curClock.getSessionLength();
     curClock.setCurrenTimerValue(60*curClock.getSessionLength());
+    if (curClock.currentMode === 0) {
+    }
 }
 sessionBtnPlus.onclick = function () {
+    if (curClock.getCurrentTimerState() === 1) {
+        return;
+    }
     curClock.setSessionLength(1);
     sessionDisplay.textContent = curClock.getSessionLength();
     curClock.setCurrenTimerValue(60*curClock.getSessionLength());
+    if (curClock.currentMode === 0) {
+    }
 }
+
 
 clockDisplay.onclick = function () {
     if (curClock.currentTimerState !== 1) {
