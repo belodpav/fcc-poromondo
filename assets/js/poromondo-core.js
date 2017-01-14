@@ -30,13 +30,14 @@ function poromondoClock(breakLength, sessionLength, currentMode) {
     },
     this.timerTimedCount = function (displayRef, time) {
         var thisVal = this; // Let's save reference to this 
-        if (time > 0 && this.currentTimerState === 1) {
-        time -=1;
-        displayRef.innerHTML = time;
-        this.setCurrenTimerValue(time);
-        console.log(time);
-        setTimeout(function () {thisVal.timerTimedCount(displayRef, time);}, 50);
-        } if (time === 0) {
+        while (time > 0 && this.currentTimerState === 1) {
+        setTimeout(function () {
+            time -=1;
+            displayRef.innerHTML = time;
+            thisVal.setCurrenTimerValue(time);
+            console.log(time);
+        }, 50);
+        } /*if (time === 0) {
             console.log("!!!=====  ", this.currentMode ,"  ======!!!");
             switch (this.currentMode) {
                 case 0:
@@ -63,9 +64,9 @@ function poromondoClock(breakLength, sessionLength, currentMode) {
                 this.setCurrenTimerValue(60*this.sessionLength);
                 //this.timerTimedCount(displayRef, this.getCurrentTimerValue());
                 //this.currentMode = 0;
-            }*/
+            }
             
-        }
+        }*/
     },
     this.getCurrentTimerValue = function () {
         return this.currentTimerValue;
