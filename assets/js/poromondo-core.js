@@ -2,7 +2,8 @@
 function poromondoClock(breakLength, sessionLength, currentMode) {
     this.breakLength = breakLength,
     this.sessionLength = sessionLength,
-    this.currentMode = currentMode, // 0 - "session" mode, 1 - "break" mode
+    this.currentMode = currentMode, // -1 - "init" state, 0 - "session" mode, 1 - "break" mode
+    this.currentFullLength = 60*this.sessionLength,
     this.currentTimerValue = 60*this.sessionLength,
     this.currentTimerState = 0, // 1 - the timer is active, 0 the timer is not avtive 
     this.setBreakLength = function (btnType) { // -1 - when "minus" button was clicked, 1 - when "plus" button was clicked
@@ -28,30 +29,53 @@ function poromondoClock(breakLength, sessionLength, currentMode) {
     this.getCurrentTimerState = function () {
         return this.currentTimerState;
     },
-    this.timerTimedCount = function (displayRef, time) {
+    this.timerTimedCount = function (clockItemsList, time) {
         var thisVal = this; // Let's save reference to this 
         if (time > 0 && this.currentTimerState === 1) {
         time -=1;
-        displayRef.innerHTML = timeToHHMMSS(time);
+        clockItemsList.display.innerHTML = timeToHHMMSS(time);
+        //
+        var timePercent = 100*(time / this.currentFullLength);
+        if (this.currentMode === 0) {
+            clockItemsList.loaderBg.style.height = timePercent +"%";    
+        } else {
+            clockItemsList.loaderBg.style.height = (100 - timePercent) +"%";
+        }
+        
+        //console.log(loadBg.style.height);
+        //
         this.setCurrenTimerValue(time);
         console.log(time);
-        setTimeout(function () {thisVal.timerTimedCount(displayRef, time);}, 50);
+        setTimeout(function () {thisVal.timerTimedCount(clockItemsList, time);}, 50);
         
         } if (time === 0) {
             this.currentTimerState = 0;
             console.log("!!!=====  ", this.currentMode ,"  ======!!!");
+            sound.play();
+            if (this.currentMode === 1) {
+                clockItemsList.loader.className = "loader-straight";
+                clockItemsList.displayMode.textContent = "Session";
+            } else {
+                clockItemsList.loader.className = "loader-reverse";
+                clockItemsList.displayMode.textContent = "Break";
+                
+            }
+            clockItemsList.loader.className += " loader";
+        
             switch (this.currentMode) {
                 case 0:
                     time = 60*this.breakLength;
+                    this.currentFullLength = time;
                     this.currentMode = 1;
                     this.setCurrenTimerValue(time);
-                    this.timerTimedCount(displayRef, this.getCurrentTimerValue());
+                    this.timerTimedCount(clockItemsList, this.getCurrentTimerValue());
                     break;
                 case 1:
                     time = 60*this.sessionLength;
+                    this.currentFullLength = time;
                     this.currentMode = 0;
                     this.setCurrenTimerValue(time);
-                    this.timerTimedCount(displayRef, this.getCurrentTimerValue());
+                    this.timerTimedCount(clockItemsList, this.getCurrentTimerValue());
                     break;
                   
             }
@@ -63,6 +87,9 @@ function poromondoClock(breakLength, sessionLength, currentMode) {
     },
     this.setCurrenTimerValue = function (termLength) {
         this.currentTimerValue = termLength;
+    },
+    this.setCurrentFullTime = function (value) {
+        this.currentFullLength = value;
     }
 };
 
@@ -85,7 +112,16 @@ var breakBtnMin  = document.querySelector(".mode-break .btn-min"),
     sessionBtnMin  = document.querySelector(".mode-session .btn-min"),
     sessionBtnPlus = document.querySelector(".mode-session .btn-plus"),
     sessionDisplay = document.querySelector(".mode-session .app-setups-display"),
-    clockDisplay = document.querySelector(".app-clock-display");
+    clockDisplay = document.querySelector(".app-clock-display"),
+    clockLoader = document.getElementById("load-element"),
+    clockLoaderBg = document.getElementById("app-load-bg"),
+    displayMode = document.getElementById("display-current-mode"),
+    sound = document.getElementById("play");
+var clockPartsList = {display : clockDisplay,
+                      loader : clockLoader,
+                      loaderBg : clockLoaderBg,
+                      displayMode : displayMode
+                     }
 
 // Creating new certain poromondo Clock
 var curClock = new poromondoClock(5, 5, 0);
@@ -103,10 +139,15 @@ breakBtnMin.onclick = function () {
     } 
     curClock.setBreakLength(-1);
     breakDisplay.textContent = curClock.getBreakLength();
-    curClock.setCurrenTimerValue(60*curClock.getBreakLength());
-    if (curClock.currentMode === 1) {
-        clockDisplay.innerHTML = timeToHHMMSS(curClock.getCurrentTimerValue());    
+    if (curClock.getCurrentTimerState() === -1) {
+        curClock.setCurrenTimerValue(60*curClock.getBreakLength());
+        curClock.setCurrentFullTime(60*curClock.getBreakLength());
+        if (curClock.currentMode === 1) {
+            clockPartsList.display.innerHTML = timeToHHMMSS(curClock.getCurrentTimerValue());    
+        }    
     }
+    
+   
     
 }
 breakBtnPlus.onclick = function () {
@@ -115,9 +156,12 @@ breakBtnPlus.onclick = function () {
     }
     curClock.setBreakLength(1);
     breakDisplay.textContent = curClock.getBreakLength();
-    curClock.setCurrenTimerValue(60*curClock.getBreakLength());
-    if (curClock.currentMode === 1) {
-        clockDisplay.innerHTML = timeToHHMMSS(curClock.getCurrentTimerValue());    
+    if (curClock.getCurrentTimerState() === -1) {
+        curClock.setCurrenTimerValue(60*curClock.getBreakLength());
+        curClock.setCurrentFullTime(60*curClock.getBreakLength());
+        if (curClock.currentMode === 1) {
+            clockPartsList.display.innerHTML = timeToHHMMSS(curClock.getCurrentTimerValue());    
+        }
     }
 }
 
@@ -129,8 +173,9 @@ sessionBtnMin.onclick = function () {
     curClock.setSessionLength(-1);
     sessionDisplay.textContent = curClock.getSessionLength();
     curClock.setCurrenTimerValue(60*curClock.getSessionLength());
+    curClock.setCurrentFullTime(60*curClock.getSessionLength());
     if (curClock.currentMode === 0) {
-        clockDisplay.innerHTML = timeToHHMMSS(curClock.getCurrentTimerValue());    
+        clockPartsList.display.innerHTML = timeToHHMMSS(curClock.getCurrentTimerValue());    
     }
 }
 sessionBtnPlus.onclick = function () {
@@ -140,20 +185,33 @@ sessionBtnPlus.onclick = function () {
     curClock.setSessionLength(1);
     sessionDisplay.textContent = curClock.getSessionLength();
     curClock.setCurrenTimerValue(60*curClock.getSessionLength());
+    curClock.setCurrentFullTime(60*curClock.getSessionLength());
     if (curClock.currentMode === 0) {
-        clockDisplay.innerHTML = timeToHHMMSS(curClock.getCurrentTimerValue());    
+        clockPartsList.display.innerHTML = timeToHHMMSS(curClock.getCurrentTimerValue());    
     }
 }
 
 
 clockDisplay.onclick = function () {
     if (curClock.currentTimerState !== 1) {
-        
+        if (curClock.currentMode === 0) {
+            clockPartsList.loader.className = "loader-straight";
+            clockPartsList.displayMode.textContent = "Session";
+        } else {
+            clockPartsList.loader.className = "loader-reverse";
+            clockPartsList.displayMode.textContent = "Break";
+        }
+        clockPartsList.loader.className += " loader";
+         
         curClock.currentTimerState = 1; // fix it !!!!!!!!!!!!!!!
-        curClock.timerTimedCount(clockDisplay, curClock.getCurrentTimerValue());
+        curClock.timerTimedCount(clockPartsList, curClock.getCurrentTimerValue());
         //clockDisplay.innerHTML = curClock.getCurrentTimerValue();
     } else {
         curClock.currentTimerState = 0;
+        clockPartsList.loader.className = "";
+       
+    
+            
         
     }
 }

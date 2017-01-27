@@ -1,0 +1,128 @@
+/* Custom Fonts */
+@import url('https://fonts.googleapis.com/css?family=Lato:300,400,700');
+
+/* Box model */
+*,
+*:before,
+*:after {
+    box-sizing: border-box;  
+}
+/* Basic */
+body {
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    text-align: center;
+    background-color: #eeeaf9;
+}
+p {
+    margin: 0;
+    padding: 0;
+}
+.app-heading {
+    font-size: 46px;
+    font-weight: 300;
+    line-height: 1.2em;
+    margin-bottom: 40px 0 40px 0;
+}
+b {
+    font-weight: 700;
+}
+button {
+    font-family: 'Lato', sans-serif;
+    font-size: 40px;
+    font-weight: 300;
+    line-height: 1em;
+    border: none;
+    outline: none;
+    background: none;
+    padding: 0 10px;
+}
+.app-setups {
+    width: 600px;
+    margin: 0 auto 20px;
+}
+.app-setups:after {
+    content: '';
+    display: table;
+    clear: both;
+}
+#display-current-mode {
+    font-size: 36px;
+    margin-top: -20px;
+    margin-bottom: 20px;
+}
+.mode-break {
+    float: left;
+}
+.mode-session {
+    float: right;
+}
+.app-mode-title {
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 10px;
+}
+.app-setups-display {
+    font-size: 40px;
+    font-weight: 300;
+    line-height: 1em;
+    
+}
+.app-clock {
+    position: relative;
+    display: inline-block;
+}
+.app-clock-display {
+    display: inline-block;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    border: 1px solid #05168a;
+    font-size: 50px;
+    line-height: 250px;
+    position: relative;
+    z-index: 100;
+}
+.loader {
+    display: inline-block;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    border: 10px solid transparent;
+    border-bottom: 10px solid #83d3f7;
+    border-top: 10px solid #83d3f7;
+    position: absolute;
+    top: -15px;
+    left: -15px;
+}
+.loader-straight {
+    animation: load 1s linear infinite;
+}
+.loader-reverse {
+    animation: load-reverse 1s linear infinite;
+}
+
+@keyframes load {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+@keyframes load-reverse {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(-360deg); }
+}
+.app-load-wrap {
+    height: 250px;
+    width: 250px;
+    border-radius: 100%;
+    position: absolute;
+    bottom: 0;
+    overflow: hidden;
+}
+#app-load-bg {
+    width: 100%;
+    height: 100%;
+    background-color: #cce3f8;
+    position: absolute;
+    bottom: 0;
+    //transition: all 1s linear;
+}
